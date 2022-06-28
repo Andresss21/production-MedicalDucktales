@@ -1,0 +1,153 @@
+<script context="module">
+  import { variables } from "../../variables";
+  export async function load({ params, fetch, session, stuff }) {
+    const url = variables.apiUri + `/degrees`;
+    const response = await fetch(url);
+
+    return {
+      status: response.status,
+      props: {
+        data: response.ok && (await response.json()),
+      },
+    };
+  }
+</script>
+
+<script lang="ts">
+  import { goto, invalidate } from "$app/navigation";
+  import Icon from "../../components/helpers/Icon.svelte";
+  export let data;
+
+  let idToDelete = null;
+
+  async function doDelete() {
+    const res = await fetch(variables.apiUri + `/degrees/${idToDelete}`, {
+      method: "DELETE",
+    });
+
+    invalidate("/degrees");
+  }
+</script>
+
+<div class="card bg-neutral card-bordered">
+  <div class="card-body text-neutral-content">
+    <div class="card-title">
+      <Icon
+        name="home"
+        width="1.5em"
+        height="1.5em"
+        stroke="white"
+        strokeWidth="1"
+      />
+      Especialidad
+
+      <a href="/degrees/new" class="btn btn-accent ml-auto">
+        <Icon
+          name="plus"
+          width="1.5em"
+          height="1.5em"
+          stroke="currentColor"
+          strokeWidth="1"
+        />
+        Agregar Nuevo
+      </a>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="table w-full">
+        <!-- head -->
+        <thead>
+          <tr>
+            <th />
+            <th>Especialidad</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- data row -->
+          {#each data.degrees as row, i}
+            <tr>
+              <th>{i + 1}</th>
+              <td>{row.degree}</td><td
+                class="text-sm text-gray-900 font-light whitespace-nowrap"
+              >
+                <div class="flex items-center w-full bg-neutral rounded-xl">
+                  <div
+                    class="flex flex-auto tooltip tooltip-primary z-40"
+                    data-tip="Ver"
+                  >
+                    <a
+                      href="/degrees/{row.id}"
+                      class="flex flex-auto items-center justify-center py-4 hover:bg-primary rounded-xl text-neutral-content hover:text-primary-content"
+                    >
+                      <Icon
+                        name="trello"
+                        width="1.5em"
+                        height="1.5em"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      />
+                    </a>
+                  </div>
+
+                  <div
+                    class="flex flex-auto tooltip tooltip-warning z-40"
+                    data-tip="Editar"
+                  >
+                    <a
+                      href="/degrees/edit/{row.id}"
+                      class="flex flex-auto items-center justify-center py-4 hover:bg-warning rounded-xl text-neutral-content hover:text-warning-content"
+                    >
+                      <Icon
+                        name="edit"
+                        width="1.5em"
+                        height="1.5em"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      />
+                    </a>
+                  </div>
+
+                  <div
+                    class="flex flex-auto tooltip tooltip-error z-40"
+                    data-tip="Eliminar"
+                  >
+                    <label
+                      for="delete-degree"
+                      class="flex flex-auto items-center justify-center py-4 hover:bg-error rounded-xl text-neutral-content hover:text-error-content"
+                      on:click={() => (idToDelete = row.id)}
+                    >
+                      <Icon
+                        name="trash-2"
+                        width="1.5em"
+                        height="1.5em"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      />
+                    </label>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Put this part before </body> tag -->
+    <input type="checkbox" id="delete-degree" class="modal-toggle" />
+    <div class="modal bg-white-500/75">
+      <div class="modal-box w-11/12 max-w-5xl bg-error">
+        <h3 class="font-bold text-lg">Advertenvcia!</h3>
+        <p class="py-4">
+          Esta a punto de eliminar un elemento, esta seguro de quere eliminarlo?
+        </p>
+        <div class="modal-action">
+          <label for="delete-degree" class="btn btn-ghost">Cancelar</label>
+          <label for="delete-degree" class="btn btn-primary" on:click={doDelete}>
+            Eliminar
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
