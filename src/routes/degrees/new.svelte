@@ -1,4 +1,5 @@
 <script context="module">
+  import Cookies from 'js-cookie'
   import { variables } from '../../variables';
 </script>
 
@@ -6,23 +7,20 @@
   import { goto } from '$app/navigation';
   import Icon from '../../components/helpers/Icon.svelte';
   let data = {
-    degree: {
-      id: '',
-      degree: ''
-    }
+    id: '',
+    degree: ''
   };
-  let result = null
 	
 	async function doPost () {
-    const url = variables.apiUri + `/degrees`;
-    console.log(JSON.stringify(data.degree));
-		const res = await fetch(url, {
+		await fetch(`${variables.apiUri}/degrees`, {
 			method: 'POST',
-			body: JSON.stringify(data.degree),
-		})
-		
-		const json = await res.json()
-		result = JSON.stringify(json)
+			body: JSON.stringify(data),
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: Cookies.get('token'),
+      },
+		});
+    
     goto('/degrees')
 	}
 </script>
@@ -59,7 +57,7 @@
           <label for="name" class="label">
             <span class="label-text">Especialidad</span>
           </label>
-          <input name="name" type="text" placeholder="Especialidad..." class="input w-full max-w-xs" bind:value="{data.degree.degree}">
+          <input name="name" type="text" placeholder="Especialidad..." class="input w-full max-w-xs" bind:value="{data.degree}">
         </div>
         <div class="form-control w-full max-w-xs w-100 mt-10">
           <button class="btn btn-accent btn-block" on:click={doPost}>

@@ -1,4 +1,5 @@
 <script context="module">
+  import Cookies from 'js-cookie';
   import { variables } from '../../variables';
 </script>
 
@@ -6,24 +7,21 @@
   import { goto } from '$app/navigation';
   import Icon from '../../components/helpers/Icon.svelte';
   let data = {
-    hospital: {
-      id: '',
-      name: '',
-      address: ''
-    }
+    id: '',
+    name: '',
+    address: ''
   };
-  let result = null
 	
 	async function doPost () {
-    const url = variables.apiUri + `/hospitals`;
-    
-		const res = await fetch(url, {
+		await fetch(`${variables.apiUri}/hospitals`, {
 			method: 'POST',
-			body: JSON.stringify(data.hospital),
+			body: JSON.stringify(data),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": Cookies.get('token')
+      }
 		})
-		
-		const json = await res.json()
-		result = JSON.stringify(json)
+
     goto('/hospitals')
 	}
 </script>
@@ -60,13 +58,13 @@
           <label for="name" class="label">
             <span class="label-text">Nombre</span>
           </label>
-          <input name="name" type="text" placeholder="Nombre..." class="input w-full max-w-xs" bind:value="{data.hospital.name}">
+          <input name="name" type="text" placeholder="Nombre..." class="input w-full max-w-xs" bind:value="{data.name}">
         </div>
         <div class="form-control w-full max-w-xs w-100 mt-5">
           <label for="address" class="label">
             <span class="label-text">Dirección</span>
           </label>
-          <textarea name="address" class="textarea" placeholder="Dirección..." bind:value="{data.hospital.address}"></textarea>
+          <textarea name="address" class="textarea" placeholder="Dirección..." bind:value="{data.address}"></textarea>
         </div>
         <div class="form-control w-full max-w-xs w-100 mt-10">
           <button class="btn btn-accent btn-block" on:click={doPost}>

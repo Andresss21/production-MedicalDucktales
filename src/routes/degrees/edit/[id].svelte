@@ -1,8 +1,14 @@
 <script context="module">
+  import Cookies from 'js-cookie'
   import { variables } from '../../../variables';
-  export async function load({ params, fetch, session, stuff }) {
-    const url = variables.apiUri + `/degrees/${params.id}`;
-    const response = await fetch(url);
+  export async function load({ params, fetch }) {
+    const response = await fetch(`${variables.apiUri}/degrees/${params.id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: Cookies.get('token'),
+      },
+    });
 
     return {
       status: response.status,
@@ -17,18 +23,17 @@
   import { goto } from '$app/navigation';
   import Icon from '../../../components/helpers/Icon.svelte';
   export let data;
-  let result = null
-	
+  
 	async function doPatch () {
-    const url = variables.apiUri + `/degrees/${data.degree.id}`;
-    console.log(JSON.stringify(data.degree));
-		const res = await fetch(url, {
+    await fetch(`${variables.apiUri}/degrees/${data.id}`, {
 			method: 'PATCH',
-			body: JSON.stringify(data.degree),
+			body: JSON.stringify(data),
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: Cookies.get('token'),
+      },
 		})
 		
-		const json = await res.json()
-		result = JSON.stringify(json)
     goto('/degrees')
 	}
 </script>
@@ -65,7 +70,7 @@
           <label for="name" class="label">
             <span class="label-text">Especialidad</span>
           </label>
-          <input name="name" type="text" placeholder="Especialidad..." bind:value="{data.degree.degree}" class="input w-full max-w-xs">
+          <input name="name" type="text" placeholder="Especialidad..." bind:value="{data.degree}" class="input w-full max-w-xs">
         </div>
 
         <div class="form-control w-full max-w-xs w-100 mt-10">

@@ -151,7 +151,7 @@
     <!-- Put this part before </body> tag -->
     <input type="checkbox" id="delete-hospital" class="modal-toggle">
     <div class="modal bg-white-500/75">
-      <div class="modal-box w-11/12 max-w-5xl bg-error">
+      <div class="modal-box w-11/12 max-w-5xl bg-accent">
         <h3 class="font-bold text-lg">Advertenvcia!</h3>
         <p class="py-4">Esta a punto de eliminar un elemento, esta seguro de quere eliminarlo?</p>
         <div class="modal-action">

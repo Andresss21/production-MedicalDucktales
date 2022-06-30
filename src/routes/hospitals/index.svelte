@@ -1,8 +1,14 @@
 <script context="module">
+  import Cookies from 'js-cookie';
   import { variables } from '../../variables';
-  export async function load({ params, fetch, session, stuff }) {
-    const url = variables.apiUri + `/hospitals`;
-    const response = await fetch(url);
+  export async function load({ fetch }) {
+    const response = await fetch(`${variables.apiUri}/hospitals`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": Cookies.get('token')
+      }
+    });
 
     return {
       status: response.status,
@@ -14,20 +20,20 @@
 </script>
   
 <script lang="ts">
-  import { goto, invalidate } from "$app/navigation";
-  import { each } from "svelte/internal";
+  import { invalidate } from "$app/navigation";
   import Icon from '../../components/helpers/Icon.svelte';
   export let data;
 
   let idToDelete = null;
-  let result = null
 	
 	async function doDelete () {
-    const url = variables.apiUri + `/hospitals/${idToDelete}`;
-    console.log(idToDelete);
-		const res = await fetch(url, {
-			method: 'DELETE',
-		})
+    await fetch(`${variables.apiUri}/hospitals/${idToDelete}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": Cookies.get('token')
+      }
+    });
     invalidate('/hospitals')
 	}
 </script>
@@ -67,7 +73,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each data.hospitals as row, i}
+          {#each data as row, i}
           <tr>
             <th>{i+1}</th>
             <td>{row.name}</td>
@@ -141,7 +147,7 @@
     <!-- Put this part before </body> tag -->
     <input type="checkbox" id="delete-hospital" class="modal-toggle">
     <div class="modal bg-white-500/75">
-      <div class="modal-box w-11/12 max-w-5xl bg-error">
+      <div class="modal-box w-11/12 max-w-5xl bg-accent">
         <h3 class="font-bold text-lg">Advertenvcia!</h3>
         <p class="py-4">Esta a punto de eliminar un elemento, esta seguro de quere eliminarlo?</p>
         <div class="modal-action">

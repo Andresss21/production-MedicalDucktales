@@ -1,8 +1,14 @@
 <script context="module">
+  import Cookies from 'js-cookie'
   import { variables } from '../../variables';
-  export async function load({ params, fetch, session, stuff }) {
-    const url = variables.apiUri + `/degrees/${params.id}`;
-    const response = await fetch(url);
+  export async function load({ params, fetch }) {
+    const response = await fetch(`${variables.apiUri}/degrees/${params.id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: Cookies.get('token'),
+      },
+    });
 
     return {
       status: response.status,
@@ -50,7 +56,7 @@
           <label for="name" class="label">
             <span class="label-text">Especialidad</span>
           </label>
-          <input name="name" type="text" placeholder="Especialidad..." class="input w-full max-w-xs" value="{data.degree.degree}" disabled>
+          <input name="name" type="text" placeholder="Especialidad..." class="input w-full max-w-xs" value="{data.degree}" disabled>
         </div>
       </div>
     </div>

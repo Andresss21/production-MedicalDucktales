@@ -1,13 +1,24 @@
 <script context="module">
+  import Cookies from 'js-cookie'
   import { variables } from "../../variables";
+
   export async function load({ params, fetch, session, stuff }) {
     const url = variables.apiUri + `/degrees`;
-    const response = await fetch(url);
+    
+    console.log(Cookies.get('token'));
+    
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": Cookies.get('token')
+      }
+    });
 
     return {
       status: response.status,
       props: {
-        data: response.ok && (await response.json()),
+        data: response.ok && (await response.json())
       },
     };
   }
@@ -18,11 +29,17 @@
   import Icon from "../../components/helpers/Icon.svelte";
   export let data;
 
+  console.log(data);
+
   let idToDelete = null;
 
   async function doDelete() {
-    const res = await fetch(variables.apiUri + `/degrees/${idToDelete}`, {
+    const res = await fetch(`${variables.apiUri}/degrees/${idToDelete}`, {
       method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: Cookies.get("token"),
+      },
     });
 
     invalidate("/degrees");
@@ -64,7 +81,7 @@
         </thead>
         <tbody>
           <!-- data row -->
-          {#each data.degrees as row, i}
+          {#each data as row, i}
             <tr>
               <th>{i + 1}</th>
               <td>{row.degree}</td><td
@@ -136,7 +153,7 @@
     <!-- Put this part before </body> tag -->
     <input type="checkbox" id="delete-degree" class="modal-toggle" />
     <div class="modal bg-white-500/75">
-      <div class="modal-box w-11/12 max-w-5xl bg-error">
+      <div class="modal-box w-11/12 max-w-5xl bg-accent">
         <h3 class="font-bold text-lg">Advertenvcia!</h3>
         <p class="py-4">
           Esta a punto de eliminar un elemento, esta seguro de quere eliminarlo?

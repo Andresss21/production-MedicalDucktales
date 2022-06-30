@@ -1,8 +1,14 @@
 <script context="module">
+  import Cookies from 'js-cookie';
   import { variables } from '../../../variables';
-  export async function load({ params, fetch, session, stuff }) {
-    const url = variables.apiUri + `/hospitals/${params.id}`;
-    const response = await fetch(url);
+  export async function load({ params, fetch }) {
+    const response = await fetch(`${variables.apiUri}/hospitals/${params.id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": Cookies.get('token')
+      }
+    });
 
     return {
       status: response.status,
@@ -17,18 +23,17 @@
   import { goto } from '$app/navigation';
   import Icon from '../../../components/helpers/Icon.svelte';
   export let data;
-  let result = null
 	
 	async function doPatch () {
-    const url = variables.apiUri + `/hospitals/${data.hospital.id}`;
-    console.log(JSON.stringify(data.hospital));
-		const res = await fetch(url, {
-			method: 'PATCH',
-			body: JSON.stringify(data.hospital),
-		})
+    await fetch(`${variables.apiUri}/hospitals/${data.id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: Cookies.get("token"),
+      },
+      body: JSON.stringify(data)
+    });
 		
-		const json = await res.json()
-		result = JSON.stringify(json)
     goto('/hospitals')
 	}
 </script>
@@ -65,13 +70,13 @@
           <label for="name" class="label">
             <span class="label-text">Nombre</span>
           </label>
-          <input name="name" type="text" placeholder="Nombre..." class="input w-full max-w-xs" bind:value="{data.hospital.name}">
+          <input name="name" type="text" placeholder="Nombre..." class="input w-full max-w-xs" bind:value="{data.name}">
         </div>
         <div class="form-control w-full max-w-xs w-100 mt-5">
           <label for="address" class="label">
             <span class="label-text">Dirección</span>
           </label>
-          <textarea name="address" class="textarea" placeholder="Dirección..." bind:value="{data.hospital.address}"></textarea>
+          <textarea name="address" class="textarea" placeholder="Dirección..." bind:value="{data.address}"></textarea>
         </div>
         <div class="form-control w-full max-w-xs w-100 mt-10">
           <button class="btn btn-accent btn-block" on:click={doPatch}>

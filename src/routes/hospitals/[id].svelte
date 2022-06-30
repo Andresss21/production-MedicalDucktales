@@ -1,8 +1,8 @@
 <script context="module">
+  import Cookies from 'js-cookie';
   import { variables } from '../../variables';
-  export async function load({ params, fetch, session, stuff }) {
-    const url = variables.apiUri + `/hospitals/${params.id}`;
-    const response = await fetch(url);
+  export async function load({ params, fetch}) {
+    const response = await fetch(`${variables.apiUri}/hospitals/${params.id}`);
 
     return {
       status: response.status,
@@ -50,13 +50,13 @@
           <label for="name" class="label">
             <span class="label-text">Nombre</span>
           </label>
-          <input name="name" type="text" placeholder="Nombre..." class="input w-full max-w-xs" value="{data.hospital.name}" disabled>
+          <input name="name" type="text" placeholder="Nombre..." class="input w-full max-w-xs" value="{data.name}" disabled>
         </div>
         <div class="form-control w-full max-w-xs w-100 mt-5">
           <label for="address" class="label">
             <span class="label-text">Dirección</span>
           </label>
-          <textarea name="address" class="textarea" placeholder="Dirección..." value="{data.hospital.address}" disabled></textarea>
+          <textarea name="address" class="textarea" placeholder="Dirección..." value="{data.address}" disabled></textarea>
         </div>
       </div>
     </div>
